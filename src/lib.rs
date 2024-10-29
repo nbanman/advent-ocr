@@ -39,7 +39,9 @@ const FONT10: &str = include_str!("../res/font10.txt");
 /// assert_eq!(s, "ABC");
 /// ```
 pub fn ocr<T: Scannable>(image: T) -> Option<String> {
-    let image = image.normalize();
+    let image = image
+        .normalize()
+        .replace("\r\n", "\n");
     let image = image.trim();
     let ids = map_to_id(image)?;
     let letter_map = get_letter_map();
@@ -51,8 +53,19 @@ pub fn ocr<T: Scannable>(image: T) -> Option<String> {
 
 fn map_to_id(image: &str) -> Option<Vec<u64>> {
     let width = image.find('\n')?;
-    let height = image.len() / width;
+    let height = (image.len() + 1) / (width + 1);
+    
+    // Check if font is proper height; otherwise return early
+    if height != 6 && height != 10 { return None; }
+    
     let image = image.as_bytes();
+    
+    // Check that image is rectangular; i.e., each line has the same width.
+    if (0..height - 1).any(|y| image[y * (width + 1) + width] != b'\n') ||
+        image.len() != (width + 1) * height - 1
+    {
+        return None;
+    }
     
     // Id takes a letter column by column, and converts it into a bitset that gets written
     // to the Vec once the letter ends.
@@ -263,6 +276,44 @@ mod tests {
                 line.chars().map(|c| c == '#').collect()
             }).collect();
         assert!(ocr_test(output, &bools));
+    }
+
+    #[test]
+    fn size5_should_fail() {
+        let letter_forms = r"
+.##..###...##..####.####..##..#..#.###...##.#..#.#.....##..###..###...###.#..#.#...#.####
+#..#.#..#.#..#.#....#....#..#.#..#..#.....#.#.#..#....#..#.#..#.#..#.#....#..#.#...#....#
+#..#.###..#....###..###..#....####..#.....#.##...#....#..#.#..#.#..#.#....#..#..#.#....#.
+####.#..#.#....#....#....#.##.#..#..#.....#.#.#..#....#..#.###..###...##..#..#...#....#..
+#..#.#..#.#..#.#....#....#..#.#..#..#..#..#.#.#..#....#..#.#....#.#.....#.#..#...#...#...
+        ";
+        assert_eq!(None, ocr(letter_forms));
+    }
+
+    #[test]
+    fn not_square_should_fail() {
+        let letter_forms = r"
+#.....##..#...##..#.###..
+#....#..#.#...##..#.#..#.
+#....#.....#.#.####.###
+#....#.##...#..#..#.#..#...
+#....#..#...#..#..#.#..#.
+####..###...#..#..#.###..
+        ";
+        assert_eq!(None, ocr(letter_forms));
+    }
+
+    #[test]
+    fn last_line_not_square_should_fail() {
+        let letter_forms = r"
+#.....##..#...##..#.###..
+#....#..#.#...##..#.#..#.
+#....#.....#.#.####.###..
+#....#.##...#..#..#.#..#.
+#....#..#...#..#..#.#..#.
+####..###...#..#..#.###...
+        ";
+        assert_eq!(None, ocr(letter_forms));
     }
 
 }
