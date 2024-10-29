@@ -80,7 +80,6 @@ fn map_to_id(image: &str) -> Option<Vec<u64>> {
 }
 
 fn get_letter_map() -> HashMap<u64, char> {
-    let mut path = env::current_exe()
     let font6 = fs::read_to_string("res/font6.txt").unwrap();
     let (letters6, letter_forms6) = font6
         .split_once("\n\n")
