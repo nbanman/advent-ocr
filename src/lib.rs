@@ -54,30 +54,46 @@ fn map_to_id(image: &str) -> Option<Vec<u64>> {
     let height = image.len() / width;
     let image = image.as_bytes();
     
+    // Id takes a letter column by column, and converts it into a bitset that gets written
+    // to the Vec once the letter ends.
     let mut id = 0u64;
+
+    // All letters have a blank column between them, except in one notable instance, a font6
+    // "Y" is followed by another letter with no blank column in between, presumably a bug.
+    // I have a special case for handling that, which requires tracking the width of the 
+    // letter.
     let mut letter_width = 0usize;
 
     let mut ids = Vec::new();
 
+    // Go by columns...
     for x in 0..width {
         let col: Vec<bool> = (0..height)
             .map(|y| image[x + y * (width + 1)] == b'#')
             .collect();
-        if col.iter().all(|&b| !b) {
+        
+        // if the column is blank, write the bitset to ids and reset back to 0.
+        if col.iter().all(|&b| !b) { 
             if id != 0 { ids.push(id); }
             id = 0;
             letter_width = 0;
         } else {
+            // "Y bug" handling. "Y" is the only letter of width 5, so push regardless of
+            // whether there is a blank line following it.
             if height == 6 && letter_width == 5 {
                 ids.push(id);
                 id = 0;
                 letter_width = 0;
             }
+
+            // Add to bitset and increment letter width.
             id = col.iter()
                 .fold(id, |acc, &b| (acc << 1) + if b { 1 } else { 0 });
             letter_width += 1;
         }
     }
+
+    // clear the hopper
     if id != 0 { ids.push(id) };
     Some(ids)
 }
@@ -108,9 +124,7 @@ fn populate_letter_map(
         .unwrap()
         .iter()
         .zip(letters.chars()) 
-        .for_each(|(&id, c)| {
-            letter_map.insert(id, c);
-        });
+        .for_each(|(&id, c)| { letter_map.insert(id, c); });
 }
 
 #[cfg(test)]
