@@ -1,0 +1,4 @@
+var searchIndex = new Map(JSON.parse('[["advent_ocr",{"t":"H","n":["ocr"],"q":[[0,"advent_ocr"],[1,"alloc::string"],[2,"core::option"]],"i":"`","f":"{c{{d{b}}}`}","D":"d","p":[[5,"String",1],[6,"Option",2]],"r":[],"b":[],"c":"OjAAAAAAAAA=","e":"OjAAAAAAAAA="}],["docs",{"t":"H","n":["ocr"],"q":[[0,"docs"],[1,"alloc::string"],[2,"core::option"]],"i":"`","f":"{c{{d{b}}}`}","D":"d","p":[[5,"String",1],[6,"Option",2]],"r":[],"b":[],"c":"OjAAAAAAAAA=","e":"OjAAAAAAAAA="}],["scannable",{"t":"KM","n":["Scannable","normalize"],"q":[[0,"scannable"],[2,"alloc::string"]],"i":"`b","f":"`{{{d{b}}}f}","D":"d","p":[[10,"Scannable",0],[1,"reference"],[5,"String",2]],"r":[],"b":[],"c":"OjAAAAAAAAA=","e":"OjAAAAEAAAAAAAAAEAAAAAAA"}]]'));
+if (typeof exports !== 'undefined') exports.searchIndex = searchIndex;
+else if (window.initSearch) window.initSearch(searchIndex);
+//{"start":39,"fragment_lengths":[221,210,253]}

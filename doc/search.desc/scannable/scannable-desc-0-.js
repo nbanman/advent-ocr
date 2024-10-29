@@ -1,0 +1,1 @@
+searchState.loadedDescShard("scannable", 0, "Marks a data type as compatible with the <code>ocr()</code> function.\nConverts the type into a String that can be read by <code>ocr()</code>. …")
