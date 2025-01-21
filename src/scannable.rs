@@ -8,11 +8,11 @@ pub trait Scannable {
     /// To implement `normalize()` for your own data type, translate your data into this
     /// format:
     /// 
-    /// ```
+    /// ```text
     /// .##..###...##.
     /// #..#.#..#.#..#
     /// #..#.###..#...
-    /// #####.#..#.#...
+    /// ####.#..#.#...
     /// #..#.#..#.#..#
     /// #..#.###...##.
     /// ```
