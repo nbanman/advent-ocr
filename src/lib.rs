@@ -26,6 +26,8 @@ const FONT10: &str = include_str!("../res/font10.txt");
 /// # Example
 /// 
 /// ```
+/// use advent_ocr::ocr;
+/// 
 /// let image = r"
 /// .##..###...##.
 /// ##..#.#..#.#..#
@@ -35,7 +37,7 @@ const FONT10: &str = include_str!("../res/font10.txt");
 /// ##..#.###...##.
 ///     ";
 /// 
-/// let s = ocr(image);
+/// let s = ocr(image).unwrap();
 /// assert_eq!(s, "ABC");
 /// ```
 pub fn ocr<T: Scannable>(image: T) -> Option<String> {
@@ -53,7 +55,7 @@ pub fn ocr<T: Scannable>(image: T) -> Option<String> {
 
 fn map_to_id(image: &str) -> Option<Vec<u64>> {
     let width = image.find('\n')?;
-    let height = (image.len() + 1) / (width + 1);
+    let height = (image.len() + 1) / width;
     
     // Check if font is proper height; otherwise return early
     if height != 6 && height != 10 { return None; }
