@@ -63,9 +63,8 @@ fn map_to_id(image: &str) -> Option<Vec<u64>> {
     let image = image.as_bytes();
     
     // Check that image is rectangular; i.e., each line has the same width.
-    if (0..height - 1).any(|y| image[y * (width + 1) + width] != b'\n') ||
-        image.len() != (width + 1) * height - 1
-    {
+    if (0..height - 1).any(|y| image[y * (width + 1) + width] != b'\n') {
+        println!("{}, {}", image.len(), (width + 1) * height - 1);
         return None;
     }
     
@@ -84,7 +83,10 @@ fn map_to_id(image: &str) -> Option<Vec<u64>> {
     // Go by columns...
     for x in 0..width {
         let col: Vec<bool> = (0..height)
-            .map(|y| image[x + y * (width + 1)] == b'#')
+            .map(|y| {
+                let symbol = image[x + y * (width + 1)];
+                symbol == b'#' || symbol == b'*'
+            })
             .collect();
         
         // if the column is blank, write the bitset to ids and reset back to 0.
@@ -306,16 +308,17 @@ mod tests {
     }
 
     #[test]
-    fn last_line_not_square_should_fail() {
+    fn rectangular() {
         let letter_forms = r"
-#.....##..#...##..#.###..
-#....#..#.#...##..#.#..#.
-#....#.....#.#.####.###..
-#....#.##...#..#..#.#..#.
-#....#..#...#..#..#.#..#.
-####..###...#..#..#.###...
+**** *  *   ** **** ***    ** **** ****
+   * * *     * *    *  *    * *       *
+  *  **      * ***  ***     * ***    * 
+ *   * *     * *    *  *    * *     *  
+*    * *  *  * *    *  * *  * *    *   
+**** *  *  **  *    ***   **  *    ****
         ";
-        assert_eq!(None, ocr(letter_forms));
+        let output = "ZKJFBJFZ";
+        assert!(ocr_test(output, letter_forms));
     }
 
 }
